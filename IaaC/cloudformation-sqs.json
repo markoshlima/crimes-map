@@ -1,0 +1,25 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+
+	"Description" : "Create SQS queue and DLQ queue",
+
+	"Resources" : {
+
+		"SparkS3TriggerDlq" : {
+		  "Type" : "AWS::SQS::Queue",
+		  "Properties" : {
+			  "QueueName" : "spark-s3-trigger-dlq"
+			}
+		},
+		"SparkS3Trigger" : {
+		  "Type" : "AWS::SQS::Queue",
+		  "Properties" : {
+			  "QueueName" : "spark-s3-trigger",
+			  "RedrivePolicy": { 
+					"deadLetterTargetArn" : {"Fn::GetAtt" : ["SparkS3TriggerDlq", "Arn"]}, 
+					"maxReceiveCount" : 3 
+				}
+			}
+		}
+	}
+}
